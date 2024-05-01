@@ -34,9 +34,9 @@ function ToDoList() {
     };
 
     function moveTaskDown(index) {
-        if (index < currentTasks.length) {
+        if (index < currentTasks.length - 1) {
           const updatedTasks = [...currentTasks];
-          [updatedTasks[index], updatedTasks[index - 1]] = [updatedTasks[index - 1], updatedTasks[index]];
+          [updatedTasks[index], updatedTasks[index + 1]] = [updatedTasks[index + 1], updatedTasks[index]];
           setCurrentTasks(updatedTasks);
         }
     };
