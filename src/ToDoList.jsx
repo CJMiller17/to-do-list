@@ -1,10 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 function ToDoList() {
     // Array of Strings
-    const [currentTasks, setCurrentTasks] = useState(["Procrastinate", "Push things off", "Wait til tomorrow"]);
-    const [newTask, setNewTask] = useState("");
+  // const [currentTasks, setCurrentTasks] = useState(() => {
+  //   return JSON.parse(localStorage.getItem("currentTasks")) ||
+  //   ["Procrastinate", "Push things off", "Wait til tomorrow"]
+  // });
+  
+    const [currentTasks, setCurrentTasks] = useState( 
+        // Utilizing the Nullish operator to implement local storage on load.
+        JSON.parse(localStorage.getItem("currentTasks")) ?? [
+          "Procrastinate",
+          "Push things off",
+          "Wait til tomorrow",
+        ]);
 
+  const [newTask, setNewTask] = useState("");
+
+  // Should load list from local storage with previous list
+  // useEffect(() => {
+  //   const storedCurrentTasks = JSON.parse(localStorage.getItem("currentTasks"));
+  //   if (storedCurrentTasks) {
+  //     setCurrentTasks(storedCurrentTasks);
+  //   }
+  // }, []);
+
+  // Should update local storage anytime the current task array is updated
+  useEffect(() => {
+    localStorage.setItem("currentTasks", JSON.stringify(currentTasks));
+  }, [currentTasks]);
+  
     function handleInputChange(event) {
         setNewTask(event.target.value)
     };
@@ -93,7 +118,6 @@ function ToDoList() {
         </div>
       </>
     );
-    
 };
 
 export default ToDoList
