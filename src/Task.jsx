@@ -4,8 +4,8 @@ import Button from "./Button";
 
 function Task({ task, deleteTask, moveTaskUp, moveTaskDown }) {
     // Calc the diff between current date and due date
-    const dueDateDiff = moment(task.dueDate, "YYYY-MM-DD").diff(moment(), "days");
-    const dueDateTest = moment(task.dueDate, "YYYY-MM-DD");
+    const dueDateDiff = moment(task.dueDate).diff(moment(), "days");
+    const dueDateTest = moment(task.dueDate);
     console.log("Moment: ", dueDateTest)
     console.log("Due Date Diff: ", dueDateDiff);
     console.log(task.dueDate)

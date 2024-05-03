@@ -92,7 +92,7 @@ function ToDoList() {
     if (!date || isNaN(new Date(date))) {
       return "";
     }
-    const mmDDYY = { month: "long", day: "numeric", year: "2-digit" };
+    const mmDDYY = { month: "long", day: "numeric", year: "numeric" };
     const selectedDate = new Date(date);
     selectedDate.setDate(selectedDate.getDate() + 1);
     const formattedDate = selectedDate.toLocaleDateString("en-US", mmDDYY);
