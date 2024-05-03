@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import moment from 'moment';
-import Button from "./Button";
+import "./index.css";
 
 function Task({ task, updateTask }) {
+  
   console.log("updateTask: ", updateTask)
-    // Calc the diff between current date and due date
+  // Calc the diff between current date and due date
   const dueDateDiff = moment(task.dueDate).diff(moment(), "days");
   const dueDateTest = moment(task.dueDate);
-  const [isEditing, setIsEditing] = useState(false);
+  // This was an attempt to fix the editing issue where the edits aren't retained
+  
+  // This code isn't working
+
+/*  const [isEditing, setIsEditing] = useState(false);
   const [editedDescription, setEditedDescription] = useState(task.description);
 
   const handleDoubleClick = () => {
@@ -24,7 +29,8 @@ function Task({ task, updateTask }) {
     updateTask(task.id, editedDescription);
     setIsEditing(false);
   }
-
+*/
+  
     let dotColor = "";
     if (dueDateDiff >= "5") {
       dotColor = "green";
@@ -38,9 +44,9 @@ function Task({ task, updateTask }) {
 
     return (
       <>
-        {/* {tasks.map((task, index) => ( */}
-        <div key={task.id} onDoubleClick={handleDoubleClick}>
-          {isEditing ? (
+        <div key={task.id}>
+          {/* // This code also isn't working. I will come back to it later */}
+          {/* {isEditing ? (
             <input
               type="text"
               value={editedDescription}
@@ -48,11 +54,11 @@ function Task({ task, updateTask }) {
               onBlur={handleSave}
               autoFocus
             />
-          ) : (
+          ) : ( */}
             <div>
               <span className="status" style={{ backgroundColor: dotColor }}> ** </span>
               <span className="text">{task.description}</span>
-            </div>)}
+            </div>
         </div>
       </>
     );

@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "./Button";
 import Task from "./Task";
 import { v4 as uuidv4 } from "uuid";
 import { DataGrid } from "@mui/x-data-grid";
-
-
+import "./index.css";
 
 function ToDoList() {
   
@@ -25,9 +23,6 @@ function ToDoList() {
       display: "flex",
       align: "right",
       headerAlign: "right",
-      // renderCell: (params) => (
-      //   <span>{params.api.getRowIndexRelativeToVisibleRows(params.id) + 1}</span>
-      // ),
     },
     {
       field: "col2",
@@ -38,9 +33,6 @@ function ToDoList() {
       renderCell: (x) => (
         <Task
           task={x.row}
-          // deleteTask={() => deleteTask(x.row.id)}
-          // moveTaskUp={() => moveTaskUp(x.row.id)}
-          // moveTaskDown={() => moveTaskDown(x.row.id)}
         />
       ),
     },
@@ -58,8 +50,6 @@ function ToDoList() {
       flex: .6,
       sortable: false,
       display: "flex",
-      // align: "right",
-      // headerAlign: "right",
       renderCell: (x) => (
         <div>
           <Button
@@ -92,8 +82,10 @@ function ToDoList() {
     if (!date || isNaN(new Date(date))) {
       return "";
     }
+    // Built in object to the toLocaleDateString method
     const mmDDYY = { month: "long", day: "numeric", year: "numeric" };
     const selectedDate = new Date(date);
+    // This fixed a timezone bug where the date always showed the previous day
     selectedDate.setDate(selectedDate.getDate() + 1);
     const formattedDate = selectedDate.toLocaleDateString("en-US", mmDDYY);
     return formattedDate;
@@ -111,7 +103,9 @@ function ToDoList() {
   function addTask() {
     // Prevents empty task submissions
     if (newTaskDescription.trim() !== "") {
+      // Creates standard task object
       const newTaskObject = {
+        // Gives each task a unique id so they can move around without errors
         id: uuidv4(),
         description: newTaskDescription,
         dueDate: formatDate(newTaskDate),
@@ -124,19 +118,20 @@ function ToDoList() {
     }
   }
   
-  
   function deleteTask(id) {
-    // The item with the current index doesn't pass the test so doesn't appear in the new array. It doesn't move, it stays behind. Fun mind experiment.
+    // The item with the current index doesn't pass the test so doesn't appear 
+    // in the new array.It doesn't move, it stays behind. Fun mind experiment.
     const updatedTasks = currentTasks.filter((task) => task.id !== id);
     setCurrentTasks(updatedTasks);
   }
   
-
   function moveTaskUp(id) {
-    // If element is at the top, it can't be moved higher, ie. BUGS!! You can push stuff up and off the screen
+    // If element is at the top, it can't be moved higher, 
+    // ie.BUGS!! You can push stuff up and off the screen
     const index = currentTasks.findIndex((task) => task.id === id);
     if (index > 0) {
       const updatedTasks = [...currentTasks];
+      // Swapping places in the index
       [updatedTasks[index], updatedTasks[index - 1]] = [
         updatedTasks[index - 1],
         updatedTasks[index],
@@ -145,14 +140,6 @@ function ToDoList() {
     }
   }
   
-  function updateTask(id, description) {
-    setCurrentTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, description: description } : task
-      )
-    );
-  }
-
   function moveTaskDown(id) {
     const index = currentTasks.findIndex((task) => task.id === id);
     if (index < currentTasks.length - 1) {
@@ -164,6 +151,17 @@ function ToDoList() {
       setCurrentTasks(updatedTasks);
     }
   }
+
+  // This function doesnt work. Tried to fix edit box bug
+  /*
+  function updateTask(id, description) {
+    setCurrentTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, description: description } : task
+      )
+    );
+  }
+  */
 
   // This fixed the bug where the numbers would get out of order
   const rowsWithPriority = currentTasks.map((task, i) => ({
@@ -177,7 +175,7 @@ function ToDoList() {
         <div>
           <input
             type="text"
-            placeholder="Thing to do"
+            placeholder="Before I forget..."
             value={newTaskDescription}
             onChange={handleTaskInput}
             // You can press enter to submit task
@@ -188,7 +186,7 @@ function ToDoList() {
               }
             }}
           />
-
+          {/* This is for accessibility reasons */}
           <label htmlFor="dueDate">Due date:</label>
 
           <input
@@ -203,18 +201,17 @@ function ToDoList() {
             class={"add-button"}
             handleAction={addTask}
             buttonText={"Add"}
-            // id={() => uuidv4}
           ></Button>
         </div>
 
         <div>
           <DataGrid
-            // rows={currentTasks}
             rows={rowsWithPriority}
             columns={columns}
             // Disables some built in visibility features that I don't want the user to have
             disableColumnMenu
             hideFooter={true}
+            // Populates the tasks into the grid
             components={{
               Cell: ({ row }) => (
                 <Task
@@ -223,11 +220,6 @@ function ToDoList() {
                 />
               ) 
             }}
-            // columnTypes={{
-            //   string: {
-            //     cellClassName: "editable-cell"
-            //   }
-            // }}
           />
         </div>
       </div>
