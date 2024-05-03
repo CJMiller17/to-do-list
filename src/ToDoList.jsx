@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "./Button";
 import { v4 as uuidv4 } from "uuid";
+import { DataGrid } from "@mui/x-data-grid";
+
+
 
 function ToDoList() {
   
@@ -11,6 +15,21 @@ function ToDoList() {
   const [currentTasks, setCurrentTasks] = useState(
     // Utilizing the Nullish operator to implement local storage on load.
     JSON.parse(localStorage.getItem("currentTasks")) ?? []);
+  
+  const rows = [
+    { id: 1, col1: "A", col2: "World" },
+    { id: 2, col1: "B", col2: "is Awesomevzdfvxdftbxftbxfbxfybxfyb ", noWrap: true },
+    { id: 3, col1: "C", col2: "is Amazing", col3: "May 25, 24" },
+    { id: 4, col1: "D", col2: "is Amazing" },
+    { id: 5, col1: "E", col2: "is Amazing" },
+  ];
+
+  const columns = [
+    { field: "col1", headerName: "Priority", flex: .3, sortable: false, display: "flex", align: "right", headerAlign: "right" },
+    { field: "col2", headerName: "Task Desc.", flex: 2, sortable: false },
+    { field: "col3", headerName: "Complete By", flex: 1, sortable: false },
+  ];
+
 
   // Should update local storage anytime the current task array is updated
   useEffect(() => {
@@ -18,6 +37,10 @@ function ToDoList() {
   }, [currentTasks]);
   
   function formatDate(date) {
+    // This makes it so that when a date isn't entered, 'Invalid Date' doesn't appear
+    if (!date || isNaN(new Date(date))) {
+      return "";
+    }
     const mmDDYY = { month: "long", day: "numeric", year: "2-digit" };
     const selectedDate = new Date(date);
     selectedDate.setDate(selectedDate.getDate() + 1);
@@ -117,43 +140,17 @@ function ToDoList() {
             handleAction={addTask}
             buttonText={"Add"}
             // id={() => uuidv4}
-          >
-            {" "}
-            I am a child
-          </Button>
-          {/* <button className="add-button" onClick={addTask}>
-            Add
-          </button> */}
+          ></Button>
         </div>
 
-        <ul>
-          {currentTasks.map((task, index) => (
-            <li key={task.id}>
-              <span className="status"> dot </span>
-              <span className="text">{task.description}</span>
-              <span className="due-date"> due: {task.dueDate}</span>
-
-              <Button
-                class={"delete-button"}
-                // The arrow fn has to be used to prevent the natural behavior of calling a function immediately with a parameter.
-                handleAction={() => deleteTask(index)}
-                buttonText={"Delete"}
-              />
-
-              <Button
-                class={"move-button"}
-                buttonText={"Up"}
-                handleAction={() => moveTaskUp(index)}
-              />
-
-              <Button
-                class={"move-button"}
-                buttonText={"Down"}
-                handleAction={() => moveTaskDown(index)}
-              />
-            </li>
-          ))}
-        </ul>
+        <div>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            // Disables some built in visibility features that I don't want the user to have
+            disableColumnMenu
+          />
+        </div>
       </div>
     </>
   );
