@@ -56,7 +56,7 @@ function Task({ task, updateTask }) {
             />
           ) : ( */}
             <div>
-              <span className="status" style={{ backgroundColor: dotColor }}> ** </span>
+              <span className="status" style={{ backgroundColor: dotColor }}>||||</span>
               <span className="text">{task.description}</span>
             </div>
         </div>

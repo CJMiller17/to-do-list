@@ -16,6 +16,19 @@ div {
   color: #682E80;
 }
 
+input {
+  height: 1.5rem;
+  margin: .5rem;
+  border-radius: 10px; 
+}
+
+.status {
+  border-radius: 50%;
+  margin: 1rem;
+  color: #FFFEF0;
+
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -25,7 +38,7 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
-
+  margin: .2rem;
 }
 
 button:hover {
