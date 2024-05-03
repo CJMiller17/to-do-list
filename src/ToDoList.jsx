@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "./Button";
+import Task from "./Task";
 import { v4 as uuidv4 } from "uuid";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -10,26 +11,76 @@ function ToDoList() {
   
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskDate, setNewTaskDate] = useState("");
-  console.log(newTaskDate);
-
   const [currentTasks, setCurrentTasks] = useState(
     // Utilizing the Nullish operator to implement local storage on load.
     JSON.parse(localStorage.getItem("currentTasks")) ?? []);
-  
-  const rows = [
-    { id: 1, col1: "A", col2: "World" },
-    { id: 2, col1: "B", col2: "is Awesomevzdfvxdftbxftbxfbxfybxfyb ", noWrap: true },
-    { id: 3, col1: "C", col2: "is Amazing", col3: "May 25, 24" },
-    { id: 4, col1: "D", col2: "is Amazing" },
-    { id: 5, col1: "E", col2: "is Amazing" },
-  ];
-
+  // const totalRows = currentTasks.length
   const columns = [
-    { field: "col1", headerName: "Priority", flex: .3, sortable: false, display: "flex", align: "right", headerAlign: "right" },
-    { field: "col2", headerName: "Task Desc.", flex: 2, sortable: false },
-    { field: "col3", headerName: "Complete By", flex: 1, sortable: false },
+    {
+      field: "priority",
+      headerName: "Priority",
+      editable: true,
+      flex: .22,
+      sortable: false,
+      display: "flex",
+      align: "right",
+      headerAlign: "right",
+      // renderCell: (params) => (
+      //   <span>{params.api.getRowIndexRelativeToVisibleRows(params.id) + 1}</span>
+      // ),
+    },
+    {
+      field: "col2",
+      headerName: "Task Desc.",
+      editable: true,
+      flex: 1,
+      sortable: false,
+      renderCell: (x) => (
+        <Task
+          task={x.row}
+          // deleteTask={() => deleteTask(x.row.id)}
+          // moveTaskUp={() => moveTaskUp(x.row.id)}
+          // moveTaskDown={() => moveTaskDown(x.row.id)}
+        />
+      ),
+    },
+    {
+      field: "dueDate",
+      headerName: "Complete By",
+      editable: true,
+      flex: .4,
+      sortable: false,
+    },
+    {
+      field: "buttons",
+      headerName: "",
+      editable: true,
+      flex: .6,
+      sortable: false,
+      display: "flex",
+      // align: "right",
+      // headerAlign: "right",
+      renderCell: (x) => (
+        <div>
+          <Button
+            class={"delete-button"}
+            buttonText={"Delete"}
+            handleAction={() => deleteTask(x.row.id)}
+          />
+          <Button
+            class={"move-button"}
+            buttonText={"Up"}
+            handleAction={() => moveTaskUp(x.row.id)}
+          />
+          <Button
+            class={"move-button"}
+            buttonText={"Down"}
+            handleAction={() => moveTaskDown(x.row.id)}
+          />
+        </div>
+      ),
+    },
   ];
-
 
   // Should update local storage anytime the current task array is updated
   useEffect(() => {
@@ -47,7 +98,6 @@ function ToDoList() {
     const formattedDate = selectedDate.toLocaleDateString("en-US", mmDDYY);
     return formattedDate;
   }
-  //export formatDate
 
   function handleTaskInput(event) {
     setNewTaskDescription(event.target.value);
@@ -58,10 +108,8 @@ function ToDoList() {
     setNewTaskDate(selectedDate);
   }
   
-
   function addTask() {
     // Prevents empty task submissions
-    console.log("here!")
     if (newTaskDescription.trim() !== "") {
       const newTaskObject = {
         id: uuidv4(),
@@ -71,19 +119,22 @@ function ToDoList() {
       setCurrentTasks([...currentTasks, newTaskObject]);
       // Clears the input field
       setNewTaskDescription("");
+      // Clears calendar
+      setNewTaskDate("");
     }
   }
   
   
-  function deleteTask(index) {
+  function deleteTask(id) {
     // The item with the current index doesn't pass the test so doesn't appear in the new array. It doesn't move, it stays behind. Fun mind experiment.
-    const updatedTasks = currentTasks.filter((element, i) => i !== index);
+    const updatedTasks = currentTasks.filter((task) => task.id !== id);
     setCurrentTasks(updatedTasks);
   }
   
 
-  function moveTaskUp(index) {
+  function moveTaskUp(id) {
     // If element is at the top, it can't be moved higher, ie. BUGS!! You can push stuff up and off the screen
+    const index = currentTasks.findIndex((task) => task.id === id);
     if (index > 0) {
       const updatedTasks = [...currentTasks];
       [updatedTasks[index], updatedTasks[index - 1]] = [
@@ -95,7 +146,8 @@ function ToDoList() {
   }
   
 
-  function moveTaskDown(index) {
+  function moveTaskDown(id) {
+    const index = currentTasks.findIndex((task) => task.id === id);
     if (index < currentTasks.length - 1) {
       const updatedTasks = [...currentTasks];
       [updatedTasks[index], updatedTasks[index + 1]] = [
@@ -105,6 +157,10 @@ function ToDoList() {
       setCurrentTasks(updatedTasks);
     }
   }
+
+  const rowsWithPriority = currentTasks.map((task, i) => ({
+    ...task, priority: i + 1,
+  }))
   
   return (
     <>
@@ -145,7 +201,8 @@ function ToDoList() {
 
         <div>
           <DataGrid
-            rows={rows}
+            // rows={currentTasks}
+            rows={rowsWithPriority}
             columns={columns}
             // Disables some built in visibility features that I don't want the user to have
             disableColumnMenu
