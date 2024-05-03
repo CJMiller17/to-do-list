@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import moment from 'moment';
 import Button from "./Button";
 
-function Task({ task, deleteTask, moveTaskUp, moveTaskDown }) {
+function Task({ task, updateTask }) {
+  console.log("updateTask: ", updateTask)
     // Calc the diff between current date and due date
-    const dueDateDiff = moment(task.dueDate).diff(moment(), "days");
-    const dueDateTest = moment(task.dueDate);
-    console.log("Moment: ", dueDateTest)
-    console.log("Due Date Diff: ", dueDateDiff);
-    console.log(task.dueDate)
+  const dueDateDiff = moment(task.dueDate).diff(moment(), "days");
+  const dueDateTest = moment(task.dueDate);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDescription, setEditedDescription] = useState(task.description);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleInputChange = () => {
+    setEditedDescription(event.target.value);
+  };
+
+  const handleSave = () => {
+    console.log("taskId: ", task.id)
+    console.log("EditDesc: ", editedDescription)
+    updateTask(task.id, editedDescription);
+    setIsEditing(false);
+  }
 
     let dotColor = "";
     if (dueDateDiff >= "5") {
@@ -24,32 +39,20 @@ function Task({ task, deleteTask, moveTaskUp, moveTaskDown }) {
     return (
       <>
         {/* {tasks.map((task, index) => ( */}
-        <div key={task.id}>
-          <span className="status" style={{ backgroundColor: dotColor }}> ** </span>
-          <span className="text">{task.description}</span>
-          {/* // This creates a condition that prevents 'due:'' from appearing on tasks without a due date
-          {task.dueDate && (
-            <span className="due-date"> due: {task.dueDate}</span>
-          )} */}
-
-          {/* <Button
-            class={"delete-button"}
-            // The arrow fn has to be used to prevent the natural behavior of calling a function immediately with a parameter.
-            buttonText={"Delete"}
-            handleAction={deleteTask}
-          />
-
-          <Button
-            class={"move-button"}
-            buttonText={"Up"}
-            handleAction={moveTaskUp}
-          />
-
-          <Button
-            class={"move-button"}
-            buttonText={"Down"}
-            handleAction={moveTaskDown}
-          /> */}
+        <div key={task.id} onDoubleClick={handleDoubleClick}>
+          {isEditing ? (
+            <input
+              type="text"
+              value={editedDescription}
+              onChange={handleInputChange}
+              onBlur={handleSave}
+              autoFocus
+            />
+          ) : (
+            <div>
+              <span className="status" style={{ backgroundColor: dotColor }}> ** </span>
+              <span className="text">{task.description}</span>
+            </div>)}
         </div>
       </>
     );

@@ -19,7 +19,7 @@ function ToDoList() {
     {
       field: "priority",
       headerName: "Priority",
-      editable: true,
+      editable: false,
       flex: .22,
       sortable: false,
       display: "flex",
@@ -54,7 +54,7 @@ function ToDoList() {
     {
       field: "buttons",
       headerName: "",
-      editable: true,
+      editable: false,
       flex: .6,
       sortable: false,
       display: "flex",
@@ -145,6 +145,13 @@ function ToDoList() {
     }
   }
   
+  function updateTask(id, description) {
+    setCurrentTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, description: description } : task
+      )
+    );
+  }
 
   function moveTaskDown(id) {
     const index = currentTasks.findIndex((task) => task.id === id);
@@ -158,6 +165,7 @@ function ToDoList() {
     }
   }
 
+  // This fixed the bug where the numbers would get out of order
   const rowsWithPriority = currentTasks.map((task, i) => ({
     ...task, priority: i + 1,
   }))
@@ -206,6 +214,20 @@ function ToDoList() {
             columns={columns}
             // Disables some built in visibility features that I don't want the user to have
             disableColumnMenu
+            hideFooter={true}
+            components={{
+              Cell: ({ row }) => (
+                <Task
+                  task={row}
+                  updateTask={updateTask}
+                />
+              ) 
+            }}
+            // columnTypes={{
+            //   string: {
+            //     cellClassName: "editable-cell"
+            //   }
+            // }}
           />
         </div>
       </div>
