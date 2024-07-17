@@ -1,9 +1,41 @@
 import React, { useEffect, useState } from "react";
-import Button from "./Button";
-import Task from "./Task";
 import { v4 as uuidv4 } from "uuid";
-import { DataGrid } from "@mui/x-data-grid";
 import "./index.css";
+import {
+  Box,
+  Button,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  Flex,
+  IconButton,
+  SimpleGrid,
+  Text,
+  useEditableControls,
+  ButtonGroup
+} from "@chakra-ui/react"
+import { CheckIcon, CloseIcon, EditIcon, ArrowUpIcon, ArrowDownIcon, DeleteIcon } from "@chakra-ui/icons"
+
+
+function EditableControls() {
+  const {
+    isEditing,
+    getSubmitButtonProps,
+    getCancelButtonProps,
+    getEditButtonProps,
+  } = useEditableControls() // Circle back to this syntax
+
+  return isEditing ? (
+    <ButtonGroup>
+      <IconButton icon={<CheckIcon />} {...getSubmitButtonProps()}/>
+      <IconButton icon={<CloseIcon />} {...getCancelButtonProps()}/>
+    </ButtonGroup>
+  ) : (
+    <Flex justifyContent="center">
+      <IconButton icon={<EditIcon />} {...getEditButtonProps()}/>
+    </Flex>
+  )
+}
 
 function ToDoList() {
   
@@ -13,82 +45,29 @@ function ToDoList() {
     // Utilizing the Nullish operator to implement local storage on load.
     JSON.parse(localStorage.getItem("currentTasks")) ?? []);
   // const totalRows = currentTasks.length
-  const columns = [
-    {
-      field: "priority",
-      headerName: "Priority",
-      editable: false,
-      flex: .22,
-      sortable: false,
-      display: "flex",
-      align: "right",
-      headerAlign: "right",
-    },
-    {
-      field: "col2",
-      headerName: "Task Desc.",
-      editable: true,
-      flex: 1,
-      sortable: false,
-      renderCell: (x) => (
-        <Task
-          task={x.row}
-        />
-      ),
-    },
-    {
-      field: "dueDate",
-      headerName: "Complete By",
-      editable: true,
-      flex: .4,
-      sortable: false,
-    },
-    {
-      field: "buttons",
-      headerName: "",
-      editable: false,
-      flex: .6,
-      sortable: false,
-      display: "flex",
-      renderCell: (x) => (
-        <div>
-          <Button
-            class={"delete-button"}
-            buttonText={"Delete"}
-            handleAction={() => deleteTask(x.row.id)}
-          />
-          <Button
-            class={"move-button"}
-            buttonText={"Up"}
-            handleAction={() => moveTaskUp(x.row.id)}
-          />
-          <Button
-            class={"move-button"}
-            buttonText={"Down"}
-            handleAction={() => moveTaskDown(x.row.id)}
-          />
-        </div>
-      ),
-    },
-  ];
+  
 
   // Should update local storage anytime the current task array is updated
   useEffect(() => {
     localStorage.setItem("currentTasks", JSON.stringify(currentTasks));
   }, [currentTasks]);
   
+  
   function formatDate(date) {
     // This makes it so that when a date isn't entered, 'Invalid Date' doesn't appear
     if (!date || isNaN(new Date(date))) {
       return "";
     }
+
+
     // Built in object to the toLocaleDateString method
     const mmDDYY = { month: "long", day: "numeric", year: "numeric" };
     const selectedDate = new Date(date);
+
+
     // This fixed a timezone bug where the date always showed the previous day
     selectedDate.setDate(selectedDate.getDate() + 1);
-    const formattedDate = selectedDate.toLocaleDateString("en-US", mmDDYY);
-    return formattedDate;
+    return selectedDate.toLocaleDateString("en-US", mmDDYY);
   }
 
   function handleTaskInput(event) {
@@ -121,8 +100,7 @@ function ToDoList() {
   function deleteTask(id) {
     // The item with the current index doesn't pass the test so doesn't appear 
     // in the new array.It doesn't move, it stays behind. Fun mind experiment.
-    const updatedTasks = currentTasks.filter((task) => task.id !== id);
-    setCurrentTasks(updatedTasks);
+    setCurrentTasks(currentTasks.filter((task) => task.id !== id));
   }
   
   function moveTaskUp(id) {
@@ -152,27 +130,19 @@ function ToDoList() {
     }
   }
 
-  // This function doesnt work. Tried to fix edit box bug
-  /*
-  function updateTask(id, description) {
-    setCurrentTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, description: description } : task
-      )
-    );
-  }
-  */
-
   // This fixed the bug where the numbers would get out of order
-  const rowsWithPriority = currentTasks.map((task, i) => ({
-    ...task, priority: i + 1,
-  }))
+  function updateTask(id, description) {
+    setCurrentTasks(currentTasks.map((task) => (task.id === id ? { ...task, description } : task)))
+  }
   
   return (
     <>
-      <div className="to-do-list">
-        <h1> Honey-Do List</h1>
-        <div>
+      <Box className="to-do-list" p={4}>
+        <Text as="h1" mb={4}>
+          {" "}
+          Honey-Do List
+        </Text>
+        <Flex mb={4} alignItems="center">
           <input
             type="text"
             placeholder="Before I forget..."
@@ -187,7 +157,12 @@ function ToDoList() {
             }}
           />
           {/* This is for accessibility reasons */}
-          <label htmlFor="dueDate">Due date:</label>
+          <label
+            htmlFor="dueDate"
+            style={{ marginLeft: "8px", marginRight: "8px" }}
+          >
+            Due date:
+          </label>
 
           <input
             type="date"
@@ -197,32 +172,57 @@ function ToDoList() {
             min="2024-01-01"
             onChange={handleTaskDueDate}
           />
-          <Button
-            class={"add-button"}
-            handleAction={addTask}
-            buttonText={"Add"}
-          ></Button>
-        </div>
+          <Button ml={2} onClick={addTask} colorScheme="teal">
+            Add
+          </Button>
+        </Flex>
 
-        <div>
-          <DataGrid
-            rows={rowsWithPriority}
-            columns={columns}
-            // Disables some built in visibility features that I don't want the user to have
-            disableColumnMenu
-            hideFooter={true}
-            // Populates the tasks into the grid
-            components={{
-              Cell: ({ row }) => (
-                <Task
-                  task={row}
-                  updateTask={updateTask}
+        <SimpleGrid columns={1} spacing={4}>
+          {currentTasks.map((task, index) => (
+            <Flex
+              key={task.id}
+              p={4}
+              borderWidth={1}
+              borderRadius="md"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box flex="1">
+                <Editable
+                  defaultValue={task.description}
+                  onSubmit={(value) => updateTask(task.id, value)}
+                >
+                  <EditablePreview />
+                  <EditableInput />
+                  <EditableControls />
+                </Editable>
+              </Box>
+
+              <Box flex=".3" textAlign="right">
+                <Text>{task.dueDate}</Text>
+              </Box>
+
+              <Box>
+                <IconButton
+                  icon={<ArrowUpIcon />}
+                  onClick={() => moveTaskUp(task.id)}
+                  mr={2}
                 />
-              ) 
-            }}
-          />
-        </div>
-      </div>
+                <IconButton
+                  icon={<ArrowDownIcon />}
+                  onClick={() => moveTaskDown(task.id)}
+                  mr={2}
+                />
+                <IconButton
+                  icon={<DeleteIcon />}
+                  onClick={() => deleteTask(task.id)}
+                  colorScheme="red"
+                />
+              </Box>
+            </Flex>
+          ))}
+        </SimpleGrid>
+      </Box>
     </>
   );
 }

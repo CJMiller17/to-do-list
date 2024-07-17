@@ -10,6 +10,8 @@
     "preview-build": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -20,6 +22,7 @@
     "@mui/material": "^5.15.16",
     "@mui/x-data-grid": "^7.3.2",
     "bootstrap-icons": "^1.11.3",
+    "framer-motion": "^11.3.4",
     "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -8,28 +8,7 @@ function Task({ task, updateTask }) {
   // Calc the diff between current date and due date
   const dueDateDiff = moment(task.dueDate).diff(moment(), "days");
   const dueDateTest = moment(task.dueDate);
-  // This was an attempt to fix the editing issue where the edits aren't retained
-  
-  // This code isn't working
 
-/*  const [isEditing, setIsEditing] = useState(false);
-  const [editedDescription, setEditedDescription] = useState(task.description);
-
-  const handleDoubleClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleInputChange = () => {
-    setEditedDescription(event.target.value);
-  };
-
-  const handleSave = () => {
-    console.log("taskId: ", task.id)
-    console.log("EditDesc: ", editedDescription)
-    updateTask(task.id, editedDescription);
-    setIsEditing(false);
-  }
-*/
   
     let dotColor = "";
     if (dueDateDiff >= "5") {
@@ -45,16 +24,6 @@ function Task({ task, updateTask }) {
     return (
       <>
         <div key={task.id}>
-          {/* // This code also isn't working. I will come back to it later */}
-          {/* {isEditing ? (
-            <input
-              type="text"
-              value={editedDescription}
-              onChange={handleInputChange}
-              onBlur={handleSave}
-              autoFocus
-            />
-          ) : ( */}
             <div>
               <span className="status" style={{ backgroundColor: dotColor }}>||||</span>
               <span className="text">{task.description}</span>
