@@ -41,6 +41,8 @@ function ToDoList() {
   
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskDate, setNewTaskDate] = useState("");
+  const [newTaskRecurring, setNewTaskRecurring] = useState(false)
+  const [newTaskFrequency, setNewTaskFrequency] = useState("")
   const [currentTasks, setCurrentTasks] = useState(
     // Utilizing the Nullish operator to implement local storage on load.
     JSON.parse(localStorage.getItem("currentTasks")) ?? []);
@@ -59,11 +61,9 @@ function ToDoList() {
       return "";
     }
 
-
     // Built in object to the toLocaleDateString method
     const mmDDYY = { month: "long", day: "numeric", year: "numeric" };
     const selectedDate = new Date(date);
-
 
     // This fixed a timezone bug where the date always showed the previous day
     selectedDate.setDate(selectedDate.getDate() + 1);
@@ -78,6 +78,14 @@ function ToDoList() {
     const selectedDate = event.target.value;
     setNewTaskDate(selectedDate);
   }
+
+  function handleTaskRecurring(even) {
+    setNewTaskRecurring(event.target.checked)
+  }
+
+  function handleTaskFrequency(event) {
+    setNewTaskFrequency(event.target.value)
+  }
   
   function addTask() {
     // Prevents empty task submissions
@@ -88,6 +96,8 @@ function ToDoList() {
         id: uuidv4(),
         description: newTaskDescription,
         dueDate: formatDate(newTaskDate),
+        recurring: newTaskRecurring,
+        frequency: newTaskFrequency
       }
       setCurrentTasks([...currentTasks, newTaskObject]);
       // Clears the input field
@@ -172,6 +182,25 @@ function ToDoList() {
             min="2024-01-01"
             onChange={handleTaskDueDate}
           />
+          <label>
+            <input
+              type="checkbox"
+              checked={newTaskRecurring}
+              onChange={handleTaskRecurring}
+            />
+            Recurring?
+          </label>
+
+          {newTaskRecurring && (
+            <select value={newTaskFrequency} onChange={handleTaskFrequency}>
+              <option value="">Select Frequency</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="biWeekly">Bi-Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          )}
+
           <Button ml={2} onClick={addTask} colorScheme="teal">
             Add
           </Button>
